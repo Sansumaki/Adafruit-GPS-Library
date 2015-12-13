@@ -39,30 +39,34 @@ boolean Adafruit_GPS::parse(char *nmea) {
     sum += parseHex(nmea[strlen(nmea)-2]);
     
     // check checksum 
-    for (uint8_t i=2; i < (strlen(nmea)-4); i++) {
+    for (uint8_t i=1; i < (strlen(nmea)-4); i++) {
       sum ^= nmea[i];
     }
     if (sum != 0) {
       // bad checksum :(
-      return false;
+      //return false;
     }
   }
   int32_t degree;
   long minutes;
   char degreebuff[10];
+  char timebuff[10];
   // look for a few common sentences
   if (strstr(nmea, "$GPGGA")) {
     // found GGA
     char *p = nmea;
     // get time
     p = strchr(p, ',')+1;
-    float timef = atof(p);
-    uint32_t time = timef;
-    hour = time / 10000;
-    minute = (time % 10000) / 100;
-    seconds = (time % 100);
-
-    milliseconds = fmod(timef, 1.0) * 1000;
+    timebuff[2] = '\0';
+    strncpy(timebuff, p, 2 );
+    hour = atoi(timebuff);
+    strncpy(timebuff, p+2, 2 );
+    minute = atoi(timebuff);
+    strncpy(timebuff, p+4, 2 );
+    seconds = atoi(timebuff);
+    timebuff[3] = '\0';
+    strncpy(timebuff, p+7, 3 );
+    milliseconds = atoi(timebuff);
 
     // parse out latitude
     p = strchr(p, ',')+1;
@@ -160,13 +164,16 @@ boolean Adafruit_GPS::parse(char *nmea) {
 
     // get time
     p = strchr(p, ',')+1;
-    float timef = atof(p);
-    uint32_t time = timef;
-    hour = time / 10000;
-    minute = (time % 10000) / 100;
-    seconds = (time % 100);
-
-    milliseconds = fmod(timef, 1.0) * 1000;
+    timebuff[2] = '\0';
+    strncpy(timebuff, p, 2 );
+    hour = atoi(timebuff);
+    strncpy(timebuff, p+2, 2 );
+    minute = atoi(timebuff);
+    strncpy(timebuff, p+4, 2 );
+    seconds = atoi(timebuff);
+    timebuff[3] = '\0';
+    strncpy(timebuff, p+7, 3 );
+    milliseconds = atoi(timebuff);
 
     p = strchr(p, ',')+1;
     // Serial.println(p);
